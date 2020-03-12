@@ -1,0 +1,60 @@
+#############################################################################
+# FOR DEVELOPMENT USE ONLY
+#
+# Dockerized warehouser stack.
+#
+# The dockerized warehouser stack leverages configuration from default development stack
+# looking overwrite as minimal as possible.
+#
+# Usage:
+#   Start a stack in the background
+#   `docker-compose up -d`
+#   re-build the container
+#   `docker-compose build`
+#   Stop all containers
+#   `docker-compose down`
+#   Stop and remove the container and rebuild
+#   `docker-compose down && docker-compose build`
+#   Remove exited containers
+#   `docker rm $(docker ps -q -f status=exited)`
+#   Remove dangling images
+#   `docker rmi $(docker images -q -f dangling=true)`
+#############################################################################
+
+version: '3'
+services:
+
+  # Development containers
+  event_store:
+    image: eventstore/eventstore
+    networks:
+      - flexe-dev
+    ports:
+      - "2113:2113"
+      - "1113:1113"
+
+  write:
+    build: read/
+    networks:
+      - flexe-dev
+    ports:
+      - "2034:8080"
+    depends_on:
+      - event_store
+    environment:
+      STORE_HOST: event_store
+
+  read:
+    build: write/
+    networks:
+      - flexe-dev
+    ports:
+      - "2035:8080"
+    depends_on:
+      - event_store
+    environment:
+      STORE_HOST: event_store
+
+networks:
+  flexe-dev:
+    external: true
