@@ -47,7 +47,7 @@ You should receive a json result from the service that contains the id of the ne
 ### View Shipment Details
 
 ```
-curl curl http://localhost:2034/<shipment id>
+curl http://localhost:2034/<shipment id>
 ```
 
 This should return the json shipment details for the given shipment
